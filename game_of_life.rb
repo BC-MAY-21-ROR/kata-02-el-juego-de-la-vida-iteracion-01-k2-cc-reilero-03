@@ -145,5 +145,6 @@ def openFile(ruta)
   file.readlines.map(&:chomp)
 end
 
+puts("Modify text.text to change the first generation of the game of life")
 data = openFile('text.text')
 grid = Grid.new(data)
