@@ -5,8 +5,8 @@ class Grid
         @grid_height = data.size
         @grid_width = data[0].size
         @grid = make_grid(data)
+        check_neighbors()
         print_grid()
-        next_iteration()
     end
 
     def print_grid()
@@ -26,6 +26,8 @@ class Grid
         array = Array.new(@grid_height) { Array.new(@grid_width) { Cell.new } }
         @grid_height.times do |i|
             @grid_width.times do |j|
+                array[i][j].pos_x = j
+                array[i][j].pos_y = i
                 if data[i][j] === '*'
                     array[i][j].revive_cell()
                 else
@@ -36,16 +38,63 @@ class Grid
         return array
     end
 
-    def next_iteration()
+
+    def check_neighbors() 
+        @grid.each do |row|
+            row.each do |cell|
+                neighbors = []
+                cell_position_y = cell.pos_y
+                cell_position_x = cell.pos_x
+                #NORTH
+                if cell_position_y -1 >= 0
+                    neighbors << @grid[cell_position_y -1][cell_position_x]
+                end
+                #NORTH-EAST
+                if cell_position_y -1 >= 0  && cell_position_x+1 < @grid_width
+                    neighbors << @grid[cell_position_y -1][cell_position_x +1]
+                end
+                #EAST
+                if cell_position_x +1 < @grid_width
+                    neighbors << @grid[cell_position_y][cell_position_x +1]
+                end
+                #SOUTH-EAST
+                if cell_position_y +1 < @grid_height && cell_position_x+1 < @grid_width
+                    neighbors << @grid[cell_position_y +1][cell_position_x +1]
+                end
+                #SOUTH
+                if cell_position_y +1 < @grid_height
+                    neighbors << @grid[cell_position_y +1][cell_position_x]
+                end
+                #SOUTH-WEST
+                if cell_position_y +1 < @grid_height && (cell_position_x -1) >= 0
+                    neighbors<< @grid[cell_position_y +1][cell_position_x -1]
+                end
+                #WEST
+                if cell_position_x -1 >= 0
+                    neighbors << @grid[cell_position_y][cell_position_x -1]
+                end
+                #NORTH-WEST
+                if (cell_position_y -1) >= 0 && (cell_position_x -1) >= 0
+                    neighbors << @grid[cell_position_y -1][cell_position_x -1]
+                end
+
+                cell.neighbors = neighbors
+                
+            end
+        end
         
     end
+
 end
 
 class Cell
-    attr_accessor :alive
+    attr_accessor :alive, :pos_x, :pos_y, :neighbors
 
     def initialize()
         @alive = 0
+        @pos_x = 0
+        @pos_y = 0
+        @neighbors = []
     end
 
     def kill_cell()
